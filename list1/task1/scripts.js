@@ -81,6 +81,8 @@ function fd(dist) {
 
     if (checkCoords(newX, newY)) {
         if (penDown) {
+            context.beginPath();
+            context.moveTo(currentX, currentY);
             context.lineTo(newX, newY);
             context.stroke();
         } else {
