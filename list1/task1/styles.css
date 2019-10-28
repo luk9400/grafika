@@ -7,3 +7,18 @@ canvas {
     max-width: 500px;
     max-height: 400px;
 }
+
+.input {
+    display: flex;
+    flex-direction: row;
+    margin: 5px;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+}
+
+#errorBox {
+    color: red;
+}
