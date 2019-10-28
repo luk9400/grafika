@@ -111,10 +111,21 @@ function example() {
     penDown = true;
     context.moveTo(currentX, currentY);
 
-    //hexagon
+    // hexagon
     for (let i = 0; i < 6; i++) {
         fd(50);
         right(60);
+    }
+
+    // move to the other place
+    penDown = false;
+    fd(200);
+    penDown = true;
+
+    // 12-gon
+    for (let i = 0; i < 12; i++) {
+        fd(50);
+        left(150);
     }
 }
 
