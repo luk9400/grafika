@@ -1,0 +1,9 @@
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+canvas {
+    max-width: 500px;
+    max-height: 400px;
+}
