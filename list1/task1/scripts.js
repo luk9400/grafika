@@ -127,6 +127,17 @@ function example() {
         fd(50);
         left(150);
     }
+
+    // move to the other place
+    penDown = false;
+    right(90);
+    fd(200);
+    penDown = true;
+
+    for (let i = 0; i < 5; i++) {
+        fd(50);
+        right(72);
+    }
 }
 
 init();
