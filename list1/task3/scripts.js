@@ -3,7 +3,7 @@ const minY = 0;
 const maxX = 500;
 const maxY = 500;
 
-function translateLevelCoordinates(degree, x, y) {
+function translateCoordinates(degree, x, y) {
     return [
         (x / degree) * (maxX - minX) + minX,
         maxY - (y / degree) * (maxY - minY) + minY
@@ -66,7 +66,7 @@ function generatePoints(inputDegree) {
 
     for (let i = 0; i < degree * degree; i++) {
         const point = hindex2xy(i, degree);
-        const coords = translateLevelCoordinates(degree, point[0], point[1]);
+        const coords = translateCoordinates(degree, point[0], point[1]);
 
         points = points.concat(coords[0] + "," + coords[1] + " ");
     }
