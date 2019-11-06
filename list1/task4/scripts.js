@@ -99,7 +99,10 @@ function rotatePoint(M, center, theta, phi) {
 }
 
 
-let objects = [new Cube(new Vertex(0, 11 * dy / 10, 0), dy)];
+let objects = [
+    new Cube(new Vertex(0, 11 * dy / 10, 0), dy),
+    new Cube(new Vertex(200, 5 * dy / 10, 0), 100)
+];
 render(objects, dx, dy);
 
 let drag = false
