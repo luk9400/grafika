@@ -41,7 +41,7 @@ let Cube = function (center, size) {
         [this.vertices[1], this.vertices[6]],
         [this.vertices[0], this.vertices[7]],
         [this.vertices[2], this.vertices[5]],
-        [this.vertices[3], this.vertices[4]]
+        [this.vertices[0], this.vertices[3]]
     ];
 };
 
@@ -73,35 +73,33 @@ function render(objects, dx, dy) {
     }
 }
 
-function rotate(M, center, theta, phi) {
+function rotate(objects, theta, phi) {
+    for (let i = 0; i < objects.length; i++) {
+        for (let j = 0; j < objects[i].vertices.length; j++) {
+            rotatePoint(objects[i].vertices[j], objects[i].center, theta, phi);
+        }
+    }
+}
+
+function rotatePoint(M, center, theta, phi) {
     // Rotation matrix coefficients
-    var ct = Math.cos(theta);
-    var st = Math.sin(theta);
-    var cp = Math.cos(phi);
-    var sp = Math.sin(phi);
+    let ct = Math.cos(theta);
+    let st = Math.sin(theta);
+    let cp = Math.cos(phi);
+    let sp = Math.sin(phi);
 
     // Rotation
-    var x = M.x - center.x;
-    var y = M.y - center.y;
-    var z = M.z - center.z;
+    let x = M.x - center.x;
+    let y = M.y - center.y;
+    let z = M.z - center.z;
 
     M.x = ct * x - st * cp * y + st * sp * z + center.x;
     M.y = st * x + ct * cp * y - ct * sp * z + center.y;
     M.z = sp * y + cp * z + center.z;
 }
 
-function autorotate() {
-    for (var i = 0; i < 8; ++i) {
-        rotate(cube.vertices[i], cube.center, -Math.PI / 720, Math.PI / 720);
-    }
 
-    render(objects, dx, dy);
-
-    autorotate_timeout = setTimeout(autorotate, 30);
-}
-
-let cube = new Cube(new Vertex(0, 11 * dy / 10, 0), dy);
-let objects = [cube];
+let objects = [new Cube(new Vertex(0, 11 * dy / 10, 0), dy)];
 render(objects, dx, dy);
 
 let drag = false
@@ -112,12 +110,7 @@ canvas.addEventListener("mousemove", event => {
         let theta = event.movementX * Math.PI / 360;
         let phi = event.movementY * Math.PI / 180;
 
-        for (var i = 0; i < 8; ++i) {
-            rotate(cube.vertices[i], cube.center, theta, phi);
-        }
-
+        rotate(objects, theta, phi);
         render(objects, dx, dy);
     }
 })
-
-//autorotate_timeout = setTimeout(autorotate, 2000);
