@@ -107,6 +107,22 @@ function rotateY(angle) {
     });
 }
 
+function rotateX(angle) {
+    let sin = Math.sin(angle);
+    let cos = Math.cos(angle);
+
+    objects.forEach(obj => {
+        obj.vertices.forEach(vertex => {
+            let x = vertex.x;
+            let y = vertex.y;
+            let z = vertex.z;
+            vertex.x = x;
+            vertex.y = y * cos - z * sin;
+            vertex.z = z * cos + y * sin;
+        });
+    });
+}
+
 function move(dx = 0, dy = 0, dz = 0) {
     objects.forEach(obj => {
         obj.vertices.forEach(vertex => {
@@ -179,10 +195,11 @@ window.addEventListener("keydown", event => pressedKeys[event.key] = true);
 window.addEventListener("keyup", event => pressedKeys[event.key] = false);
 canvas.addEventListener("mousemove", event => {
     if (drag) {
-        let theta = event.movementX * Math.PI / 360;
-        let phi = event.movementY * Math.PI / 180;
+        let alpha = -event.movementX * Math.PI / 360;
+        let beta = event.movementY * Math.PI / 180;
         
-        rotateY(theta);
+        rotateY(alpha);
+        rotateX(beta);
     }
 });
 
