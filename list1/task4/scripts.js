@@ -2,7 +2,7 @@ const canvas = document.getElementById("gameCanvas");
 const context = canvas.getContext("2d");
 const dx = canvas.width / 2;
 const dy = canvas.height / 2;
-const perspective = 200;
+const perspective = 500;
 
 const pressedKeys = {};
 const speedUp = 0.3;
@@ -10,9 +10,9 @@ const slowDown = 0.2;
 const maxSpeed = 50;
 let previousTimestamp = 0;
 let vx = 0;
+let vy = 0;
 let vz = 0;
-
-
+let drag = false;
 
 let Vertex = function (x, y, z) {
     this.x = parseFloat(x);
@@ -24,6 +24,11 @@ let Vertex2D = function (x, y) {
     this.x = parseFloat(x);
     this.y = parseFloat(y);
 };
+
+let Line = function (start, end) {
+    this.start = start;
+    this.end = end;
+}
 
 let Cube = function (center, size) {
     this.center = center;
@@ -41,108 +46,66 @@ let Cube = function (center, size) {
     ];
 
     this.lines = [
-        [this.vertices[0], this.vertices[1]],
-        [this.vertices[1], this.vertices[2]],
-        [this.vertices[2], this.vertices[3]],
-        [this.vertices[3], this.vertices[4]],
-        [this.vertices[4], this.vertices[5]],
-        [this.vertices[5], this.vertices[6]],
-        [this.vertices[6], this.vertices[7]],
-        [this.vertices[7], this.vertices[4]],
-        [this.vertices[1], this.vertices[6]],
-        [this.vertices[0], this.vertices[7]],
-        [this.vertices[2], this.vertices[5]],
-        [this.vertices[0], this.vertices[3]]
+        new Line(this.vertices[0], this.vertices[1]),
+        new Line(this.vertices[1], this.vertices[2]),
+        new Line(this.vertices[2], this.vertices[3]),
+        new Line(this.vertices[3], this.vertices[4]),
+        new Line(this.vertices[4], this.vertices[5]),
+        new Line(this.vertices[5], this.vertices[6]),
+        new Line(this.vertices[6], this.vertices[7]),
+        new Line(this.vertices[7], this.vertices[4]),
+        new Line(this.vertices[1], this.vertices[6]),
+        new Line(this.vertices[0], this.vertices[7]),
+        new Line(this.vertices[2], this.vertices[5]),
+        new Line(this.vertices[0], this.vertices[3])
     ];
 };
 
-function project(M) {
-    let d = 200;
-    let r = d / M.y;
+function project(line) {
+    let d = perspective;
+    if (line.start.z <= -d && line.end.z <= -d) {
+        return [];
+    }
 
-    return new Vertex2D(r * M.x, r * M.z);
+    return new Line(new Vertex2D(d * line.start.x / Math.max(d + line.start.z, 0.01), d * line.start.y / Math.max(d + line.start.z, 0.01)), new Vertex2D(d * line.end.x / Math.max(d + line.end.z, 0.01), d * line.end.y / Math.max(d + line.end.z, 0.01)));
 }
-
-// function project(M) {
-//     return new Vertex2D(perspective * M.x / Math.max(perspective + M.z, 0.01), perspective * M.y / Math.max(perspective + M.z, 0.01));
-// }
 
 function render(objects, dx, dy) {
     // clearing previous frame
     context.clearRect(0, 0, 2 * dx, 2 * dy);
+    context.fillRect(0, 0, 2 * dx, 2 * dy);
 
     for (let i = 0; i < objects.length; i++) {
         for (let j = 0; j < objects[i].lines.length; j++) {
-            let line = objects[i].lines[j];
+            let line = project(objects[i].lines[j]);
+            if (line.start === undefined) {
+                continue;
+            }
 
-            let P = project(line[0]);
             context.beginPath();
-            context.moveTo(P.x + dx, -P.y + dy);
-
-            P = project(line[1]);
-            context.lineTo(P.x + dx, -P.y + dy);
-
+            context.moveTo(line.start.x + dx, line.start.y + dy);
+            context.lineTo(line.end.x + dx, line.end.y + dy);
             context.closePath();
             context.stroke();
         }
     }
 }
 
-function rotate(objects, theta, phi) {
-    for (let i = 0; i < objects.length; i++) {
-        for (let j = 0; j < objects[i].vertices.length; j++) {
-            rotatePoint(objects[i].vertices[j], objects[i].center, theta, phi);
-        }
-    }
+function rotateY(angle) {
+    let sin = Math.sin(angle);
+    let cos = Math.cos(angle);
+
+    objects.forEach(obj => {
+        obj.vertices.forEach(vertex => {
+            let x = vertex.x;
+            let y = vertex.y;
+            let z = vertex.z;
+            vertex.x = x * cos + z * sin;
+            vertex.y = y;
+            vertex.z = z * cos - x * sin;
+        });
+    });
 }
-
-function rotatePoint(M, center, theta, phi) {
-    // Rotation matrix coefficients
-    let ct = Math.cos(theta);
-    let st = Math.sin(theta);
-    let cp = Math.cos(phi);
-    let sp = Math.sin(phi);
-
-    // Rotation
-    let x = M.x - center.x;
-    let y = M.y - center.y;
-    let z = M.z - center.z;
-
-    M.x = ct * x - st * cp * y + st * sp * z + center.x;
-    M.y = st * x + ct * cp * y - ct * sp * z + center.y;
-    M.z = sp * y + cp * z + center.z;
-}
-
-// function rotate(pitch = 0, roll = 0, yaw = 0) {
-//     let cosa = Math.cos(yaw);
-//     let sina = Math.sin(yaw);
-
-//     let cosb = Math.cos(pitch);
-//     let sinb = Math.sin(pitch);
-
-//     let cosc = Math.cos(roll);
-//     let sinc = Math.sin(roll);
-
-//     let Axx = cosa * cosb;
-//     let Axy = cosa * sinb * sinc - sina * cosc;
-//     let Axz = cosa * sinb * cosc + sina * sinc;
-
-//     let Ayx = sina * cosb;
-//     let Ayy = sina * sinb * sinc + cosa * cosc;
-//     let Ayz = sina * sinb * cosc - cosa * sinc;
-
-//     let Azx = -sinb;
-//     let Azy = cosb * sinc;
-//     let Azz = cosb * cosc;
-
-//     objects.forEach(obj => {
-//         obj.vertices.forEach(vertex => {
-//             vertex.x = Axx * vertex.x + Axy * vertex.y + Axz * (vertex.z + perspective);
-//             vertex.y = Ayx * vertex.x + Ayy * vertex.y + Ayz * (vertex.z + perspective);
-//             vertex.z = Azx * vertex.x + Azy * vertex.y + Azz * vertex.z - perspective;
-//         });
-//     });
-// }
 
 function move(dx = 0, dy = 0, dz = 0) {
     objects.forEach(obj => {
@@ -169,10 +132,17 @@ let draw = (timestamp) => {
         vx = Math.min(vx + speedUp * timeFactor, maxSpeed);
     }
 
-    if (vz > 0) {
-        vz -= Math.min(slowDown * timeFactor, vz);
+    if (pressedKeys["q"]) {
+        vy = Math.max(vy - speedUp * timeFactor, -maxSpeed);
+    } else if (pressedKeys["e"]) {
+        vy = Math.min(vy + speedUp * timeFactor, maxSpeed);
+    }
+
+
+    if (vy > 0) {
+        vy -= Math.min(slowDown * timeFactor, vy);
     } else {
-        vz -= Math.max(-slowDown * timeFactor, vz);
+        vy -= Math.max(-slowDown * timeFactor, vy);
     }
 
     if (vx > 0) {
@@ -181,7 +151,13 @@ let draw = (timestamp) => {
         vx -= Math.max(-slowDown * timeFactor, vx);
     }
 
-    move(vx, vz, 0);
+    if (vz > 0) {
+        vz -= Math.min(slowDown * timeFactor, vz);
+    } else {
+        vz -= Math.max(-slowDown * timeFactor, vz);
+    }
+
+    move(vx, vy, vz);
     render(objects, dx, dy);
     previousTimestamp = timestamp;
     window.requestAnimationFrame(draw);
@@ -189,13 +165,14 @@ let draw = (timestamp) => {
 
 let objects = [
     //new Cube(new Vertex(0, 1.1 * dy, 0), dy),
-    new Cube(new Vertex(0, 100, 0), 100),
-    new Cube(new Vertex(0, 200, 0), 100),
-    new Cube(new Vertex(100, 200, 0), 100),
+    new Cube(new Vertex(0, 0, 0), 100),
+    new Cube(new Vertex(0, 0, 100), 200),
+    new Cube(new Vertex(100, 0, 0), 100),
 ];
+context.fillStyle = "#F0F0F0";
+context.fillRect(0, 0, 2 * dx, 2 * dy);
 render(objects, dx, dy);
 
-let drag = false;
 canvas.addEventListener("mousedown", () => drag = true);
 document.addEventListener("mouseup", () => drag = false);
 window.addEventListener("keydown", event => pressedKeys[event.key] = true);
@@ -204,10 +181,8 @@ canvas.addEventListener("mousemove", event => {
     if (drag) {
         let theta = event.movementX * Math.PI / 360;
         let phi = event.movementY * Math.PI / 180;
-
-        rotate(objects, theta, phi);
-        //rotate(event.movementX / 500, event.movementY / 500);
-        //render(objects, dx, dy);
+        
+        rotateY(theta);
     }
 });
 
