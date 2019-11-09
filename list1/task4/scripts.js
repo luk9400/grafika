@@ -33,6 +33,7 @@ let Line = function (start, end) {
 let Cube = function (center, size) {
     this.center = center;
     let d = size / 2;
+    this.radius = d * Math.sqrt(3);
 
     this.vertices = [
         new Vertex(center.x - d, center.y - d, center.z + d),
@@ -99,10 +100,10 @@ function rotateY(angle) {
         obj.vertices.forEach(vertex => {
             let x = vertex.x;
             let y = vertex.y;
-            let z = vertex.z;
+            let z = vertex.z + perspective;
             vertex.x = x * cos + z * sin;
             vertex.y = y;
-            vertex.z = z * cos - x * sin;
+            vertex.z = (z - perspective) * cos - x * sin;
         });
     });
 }
@@ -115,10 +116,10 @@ function rotateX(angle) {
         obj.vertices.forEach(vertex => {
             let x = vertex.x;
             let y = vertex.y;
-            let z = vertex.z;
+            let z = vertex.z + perspective;
             vertex.x = x;
             vertex.y = y * cos - z * sin;
-            vertex.z = z * cos + y * sin;
+            vertex.z = (z - perspective) * cos + y * sin;
         });
     });
 }
@@ -175,16 +176,40 @@ let draw = (timestamp) => {
 
     move(vx, vy, vz);
     render(objects, dx, dy);
+    checkCollision();
     previousTimestamp = timestamp;
     window.requestAnimationFrame(draw);
 };
 
-let objects = [
-    //new Cube(new Vertex(0, 1.1 * dy, 0), dy),
-    new Cube(new Vertex(0, 0, 0), 100),
-    new Cube(new Vertex(0, 0, 100), 200),
-    new Cube(new Vertex(100, 0, 0), 100),
-];
+function distance(a, b) {
+    return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2) + Math.pow(a.z - b.z, 2));
+}
+
+function checkCollision() {
+    objects.forEach(obj => {
+        if (distance(obj.center, {x: 0, y: 0, z: -perspective}) < obj.radius) {
+            window.alert("You lost");
+        }
+    });
+}
+
+function rand() {
+    return Math.floor(Math.random() * Math.floor(1000));
+}
+
+function generateSpace() {
+    let obj = [];
+
+    for (let i = 0; i < 100; i++) {
+        obj.push(new Cube(new Vertex(rand(), rand(), rand()), 10));
+    }
+
+    return obj;
+}
+
+let objects = generateSpace();
+//objects.push(new Cube(new Vertex(0, 0, 0), 4000));
+
 context.fillStyle = "#F0F0F0";
 context.fillRect(0, 0, 2 * dx, 2 * dy);
 render(objects, dx, dy);
