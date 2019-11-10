@@ -201,6 +201,7 @@ function parseCommand(command) {
         }
         case "clear": {
             context.clearRect(0, 0, 2 * dx, 2 * dy);
+            objects = [new Line({ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 0 }, false)];
             break;
         }
         case "example": {
