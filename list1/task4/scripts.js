@@ -1,8 +1,10 @@
 const canvas = document.getElementById("gameCanvas");
 const context = canvas.getContext("2d");
+const err = document.getElementById("err");
 const dx = canvas.width / 2;
 const dy = canvas.height / 2;
 const perspective = 500;
+
 
 const pressedKeys = {};
 const speedUp = 0.3;
@@ -43,7 +45,8 @@ let Cube = function (center, size) {
         new Vertex(center.x + d, center.y + d, center.z + d),
         new Vertex(center.x + d, center.y + d, center.z - d),
         new Vertex(center.x - d, center.y + d, center.z - d),
-        new Vertex(center.x - d, center.y + d, center.z + d)
+        new Vertex(center.x - d, center.y + d, center.z + d),
+        new Vertex(center.x, center.y, center.z)
     ];
 
     this.lines = [
@@ -58,6 +61,7 @@ let Cube = function (center, size) {
         new Line(this.vertices[1], this.vertices[6]),
         new Line(this.vertices[0], this.vertices[7]),
         new Line(this.vertices[2], this.vertices[5]),
+        // center of cube
         new Line(this.vertices[0], this.vertices[3])
     ];
 };
@@ -103,7 +107,7 @@ function rotateY(angle) {
             let z = vertex.z + perspective;
             vertex.x = x * cos + z * sin;
             vertex.y = y;
-            vertex.z = (z - perspective) * cos - x * sin;
+            vertex.z = z * cos - x * sin - perspective;
         });
     });
 }
@@ -119,7 +123,7 @@ function rotateX(angle) {
             let z = vertex.z + perspective;
             vertex.x = x;
             vertex.y = y * cos - z * sin;
-            vertex.z = (z - perspective) * cos + y * sin;
+            vertex.z = z * cos + y * sin - perspective;
         });
     });
 }
@@ -175,8 +179,8 @@ let draw = (timestamp) => {
     }
 
     move(vx, vy, vz);
-    render(objects, dx, dy);
     checkCollision();
+    render(objects, dx, dy);
     previousTimestamp = timestamp;
     window.requestAnimationFrame(draw);
 };
@@ -187,7 +191,10 @@ function distance(a, b) {
 
 function checkCollision() {
     objects.forEach(obj => {
-        if (distance(obj.center, {x: 0, y: 0, z: -perspective}) < obj.radius) {
+        if (distance(obj.vertices[8], {x: 0, y: 0, z: -perspective}) < obj.radius) {
+            vx = 0;
+            vy = 0;
+            vz = 0;
             window.alert("You lost");
         }
     });
