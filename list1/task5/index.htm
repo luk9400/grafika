@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf8">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        canvas {
+            max-width: 600px;
+            max-height: 600px;
+        }
+
+        .input {
+            display: flex;
+            flex-direction: row;
+            margin: 5px;
+        }
+
+        .info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #errorBox {
+            color: red;
+        }
+    </style>
+    <title>Logo3D</title>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="600" height="600" style="border:1px solid;">
+        Your browser does not support the canvas element.
+    </canvas>
+
+    <div class="input">
+        <textarea id="command-input" rows="10" cols="40"></textarea>
+        <button id="runButton">Run</button>
+        <span id="info"></span>
+    </div>
+
+    <span id="errorBox"></span>
+
+    <script src="scripts.js"></script>
+</body>
+
+</html>
