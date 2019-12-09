@@ -1,19 +1,27 @@
 const vsSource = `
 attribute vec4 aVertexPosition;
+attribute vec4 aVertexColor;
 
 uniform mat4 uModelViewMatrix;
 uniform mat4 uProjectionMatrix;
 
+varying lowp vec4 vColor;
+
 void main() {
   gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+  vColor = aVertexColor;
 }
 `;
 
 const fsSource = `
+    varying lowp vec4 vColor;
+
     void main() {
-      gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+      gl_FragColor = vColor;
     }
   `;
+
+let squareRotation = 0.0;
 
 function initShaderProgram(gl, vsSource, fsSource) {
     const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
@@ -61,16 +69,26 @@ function initBuffers(gl) {
         1.0, -1.0,
     ];
 
-    gl.bufferData(gl.ARRAY_BUFFER,
-        new Float32Array(positions),
-        gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+    const colors = [
+        1.0, 1.0, 1.0, 1.0,    // white
+        1.0, 0.0, 0.0, 1.0,    // red
+        0.0, 1.0, 0.0, 1.0,    // green
+        0.0, 0.0, 1.0, 1.0,    // blue
+    ];
+
+    const colorBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
 
     return {
         position: positionBuffer,
+        color: colorBuffer,
     };
 }
 
-function drawScene(gl, programInfo, buffers) {
+function drawScene(gl, programInfo, buffers, deltaTime) {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
     gl.clearDepth(1.0);                 // Clear everything
     gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -101,6 +119,13 @@ function drawScene(gl, programInfo, buffers) {
         modelViewMatrix,     // matrix to translate
         [-0.0, 0.0, -6.0]);  // amount to translate
 
+    mat4.rotate(
+        modelViewMatrix,
+        modelViewMatrix,
+        squareRotation,
+        [1, 1, 1]
+    );
+
     // Tell WebGL how to pull out the positions from the position
     // buffer into the vertexPosition attribute.
     {
@@ -121,6 +146,24 @@ function drawScene(gl, programInfo, buffers) {
         gl.enableVertexAttribArray(
             programInfo.attribLocations.vertexPosition);
     }
+
+    {
+        const numComponents = 4;
+        const type = gl.FLOAT;
+        const normalize = false;
+        const stride = 0;
+        const offset = 0;
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffers.color);
+        gl.vertexAttribPointer(
+            programInfo.attribLocations.vertexColor,
+            numComponents,
+            type,
+            normalize,
+            stride,
+            offset
+        );
+        gl.enableVertexAttribArray(programInfo.attribLocations.vertexColor);
+    }
     gl.useProgram(programInfo.program);
 
     gl.uniformMatrix4fv(
@@ -137,6 +180,8 @@ function drawScene(gl, programInfo, buffers) {
         const vertexCount = 4;
         gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
     }
+
+    squareRotation += deltaTime;
 }
 
 function main() {
@@ -149,6 +194,7 @@ function main() {
         program: shaderProgram,
         attribLocations: {
             vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+            vertexColor: gl.getAttribLocation(shaderProgram, 'aVertexColor'),
         },
         uniformLocations: {
             projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
@@ -159,7 +205,7 @@ function main() {
     const buffers = initBuffers(gl);
 
 
-    drawScene(gl, programInfo, buffers);
+    
 
     const numAttribs = gl.getProgramParameter(shaderProgram, gl.ACTIVE_ATTRIBUTES);
     for (let i = 0; i < numAttribs; ++i) {
@@ -173,6 +219,19 @@ function main() {
         console.log('name:', info.name, 'type:', info.type, 'size:', info.size);
     }
 
+    let then = 0;
+
+    function render(now) {
+        now *= 0.001;
+        const deltaTime = now - then;
+        then = now;
+
+        drawScene(gl, programInfo, buffers, deltaTime);
+
+        requestAnimationFrame(render);
+    }
+
+    requestAnimationFrame(render);
 }
 
 window.onload = main;
