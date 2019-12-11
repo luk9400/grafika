@@ -29,4 +29,14 @@ class Utils {
 
         return shaderProgram;
     }
+
+    static resizeCanvas(canvas) {
+        let displayWidth = canvas.clientWidth;
+        let displayHeight = canvas.clientHeight;
+
+        if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
+            canvas.width = displayWidth;
+            canvas.height = displayHeight;
+        }
+    }
 }

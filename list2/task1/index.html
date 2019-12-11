@@ -11,20 +11,6 @@
     <script src="script.js"></script>
     <title>Zadanko 1</title>
 
-    <script id='2d-vertex-shader' type='notjs'>
-        attribute vec4 aVertexPosition;
-attribute vec4 aVertexColor;
-
-uniform mat4 uModelViewMatrix;
-uniform mat4 uProjectionMatrix;
-
-varying lowp vec4 vColor;
-
-void main() {
-    gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-    vColor = aVertexColor;
-}
-    </script>
 </head>
 
 <body>
@@ -32,7 +18,15 @@ void main() {
         Your browser doesn't support canvas element.
     </canvas>
 
-
+    <nav>
+        <p id="current">CURRENT: POINTS</p>
+        <button id="points">POINTS</button>
+        <button id="line_strip">LINE STRIP</button>
+        <button id="line_loop">LINE LOOP</button>
+        <button id="lines">LINES</button>
+        <button id="triangle_strip">TRIANGLE STRIP</button>
+        <button id="triangle_fan">TRIANGLE FAN</button>
+        <button id="triangles">TRIANGLES</button>
+    </nav>
 </body>
-
 </html>
