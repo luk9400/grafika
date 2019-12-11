@@ -5,7 +5,26 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="./styles.css" rel="stylesheet" />
+    <script src="../shared/gl-matrix.js"></script>
+    <script src="../shared/utils.js"></script>
+    <script src="shaders.js"></script>
+    <script src="script.js"></script>
     <title>Zadanko 1</title>
+
+    <script id='2d-vertex-shader' type='notjs'>
+        attribute vec4 aVertexPosition;
+attribute vec4 aVertexColor;
+
+uniform mat4 uModelViewMatrix;
+uniform mat4 uProjectionMatrix;
+
+varying lowp vec4 vColor;
+
+void main() {
+    gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+    vColor = aVertexColor;
+}
+    </script>
 </head>
 
 <body>
@@ -13,7 +32,7 @@
         Your browser doesn't support canvas element.
     </canvas>
 
-    <script src="../gl-matrix.js"></script>
-    <script src="script.js"></script>
+
 </body>
+
 </html>
