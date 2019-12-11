@@ -9,24 +9,21 @@
     <script src="../shared/utils.js"></script>
     <script src="shaders.js"></script>
     <script src="webgl.js"></script>
+    <script src="hilbert.js"></script>
     <script src="main.js"></script>
-    <title>Zadanko 1</title>
+    <title>Hilbert</title>
+
 </head>
 
 <body>
 <canvas id='canvas'>
     Your browser doesn't support canvas element.
 </canvas>
-
 <nav>
-    <p id="current">CURRENT: POINTS</p>
-    <button id="POINTS">POINTS</button>
-    <button id="LINE_STRIP">LINE STRIP</button>
-    <button id="LINE_LOOP">LINE LOOP</button>
-    <button id="LINES">LINES</button>
-    <button id="TRIANGLE_STRIP">TRIANGLE STRIP</button>
-    <button id="TRIANGLE_FAN">TRIANGLE FAN</button>
-    <button id="TRIANGLES">TRIANGLES</button>
+    <label for='degree'>Poziom:</label>
+    <input id='degree' type="number" min="1" max="15" value="4">
+    <button id='btn'>Rysuj</button>
 </nav>
+
 </body>
 </html>

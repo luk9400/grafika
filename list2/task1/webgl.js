@@ -1,5 +1,3 @@
-window.onload = main;
-
 function initBuffers(gl) {
     const positionBuffer = gl.createBuffer();
 
@@ -7,11 +5,11 @@ function initBuffers(gl) {
 
     const positions = [
         100.0, 100.0,
-        200.0, 100.0,
-        300.0, 200.0,
-        200.0, 300.0,
-        100.0, 300.0,
-        50.0, 200.0
+        300.0, 100.0,
+        400.0, 300.0,
+        300.0, 500.0,
+        100.0, 500.0,
+        50.0, 350.0
     ];
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
@@ -57,50 +55,4 @@ function getInfo(gl, shaderProgram) {
         const info = gl.getActiveUniform(shaderProgram, i);
         console.log('name:', info.name, 'type:', info.type, 'size:', info.size);
     }
-}
-
-function main() {
-    const current = document.getElementById('current')
-    const canvas = document.getElementById('canvas');
-    const gl = canvas.getContext('webgl');
-    if (!gl) {
-        return;
-    }
-
-    let type = gl.POINTS;
-    let needToRender = true;
-    document.querySelector('nav').addEventListener('click', event => {
-        if (event.target.id) {
-            const name = event.target.id.toUpperCase();
-            type = gl[name];
-            current.textContent = `CURRENT: ${name}`;
-            needToRender = true;
-        }
-    });
-
-    const shaderProgram = Utils.initShaderProgram(gl, vsSource, fsSource);
-
-    const programInfo = {
-        program: shaderProgram,
-        attribLocations: {
-            vertexPosition: gl.getAttribLocation(shaderProgram, 'aPosition')
-        },
-        uniformLocations: {
-            resolutionUniform: gl.getUniformLocation(shaderProgram, 'uResolution'),
-            colorUniform: gl.getUniformLocation(shaderProgram, 'uColor'),
-        },
-    };
-
-    const positionBuffer = initBuffers(gl);
-
-    function render() {
-        if (needToRender) {
-            needToRender = false;
-            drawScene(gl, programInfo, positionBuffer, type);
-        }
-        requestAnimationFrame(render);
-    }
-    render();
-
-    getInfo(gl, programInfo.program);
 }
