@@ -18,7 +18,12 @@ nav {
 }
 
 .menu {
+    padding: 5px;
     display: flex;
     flex-direction: column;
     border: 1px solid rebeccapurple;
+}
+
+.menu:hover {
+    opacity: 0.5;
 }

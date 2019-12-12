@@ -12,9 +12,12 @@ function drawScene(gl, programInfo, objectsToDraw) {
     Utils.resizeCanvas(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-    gl.clearColor(0.0, 0.0, 0.0, 0.0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
 
+    gl.clearColor(0.0, 0.0, 0.0, 0.0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LEQUAL);
     gl.useProgram(programInfo.program);
 
 
@@ -35,6 +38,8 @@ function drawScene(gl, programInfo, objectsToDraw) {
         gl.uniformMatrix3fv(programInfo.uniformLocations.matrixUniform, false, matrix);
 
         gl.uniform4fv(programInfo.uniformLocations.colorUniform, object.uniforms.uColor);
+
+        gl.uniform1f(programInfo.uniformLocations.depthUniform, object.uniforms.uDepth);
 
         gl.drawArrays(gl.LINE_STRIP, 0, object.degree * object.degree);
     });

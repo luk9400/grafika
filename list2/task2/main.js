@@ -1,6 +1,7 @@
 window.onload = main;
 let needToRender = true;
 let objectsToDraw = [];
+let currentObject;
 
 function main() {
     const canvas = document.getElementById('canvas');
@@ -9,14 +10,12 @@ function main() {
         return;
     }
     let pressedKeys = {};
-    let currentObject;
+    let degree = parseInt(document.getElementById('degree').value);
 
     window.addEventListener("keydown", event => pressedKeys[event.key] = true);
     window.addEventListener("keyup", event => pressedKeys[event.key] = false);
 
     Utils.resizeCanvas(gl.canvas);
-
-    let degree = parseInt(document.getElementById('degree').value);
 
     document.getElementById('btn').addEventListener('click', event => {
         degree = parseInt(document.getElementById('degree').value);
@@ -26,12 +25,13 @@ function main() {
             degree: Math.pow(2, degree),
             uniforms: {
                 uColor: [Math.random(), Math.random(), Math.random(), 1],
+                uDepth: -0.5
             },
             translation: [0, 0]
         };
         objectsToDraw.push(object);
         let len = objectsToDraw.length - 1;
-        addMenu(objectsToDraw[len], len);
+        addMenu(objectsToDraw[len], len, degree);
         needToRender = true;
     });
 
@@ -45,6 +45,7 @@ function main() {
         uniformLocations: {
             matrixUniform: gl.getUniformLocation(shaderProgram, 'uMatrix'),
             colorUniform: gl.getUniformLocation(shaderProgram, 'uColor'),
+            depthUniform: gl.getUniformLocation(shaderProgram, 'uDepth')
         },
     };
 
@@ -54,12 +55,13 @@ function main() {
         degree: Math.pow(2, degree),
         uniforms: {
             uColor: [Math.random(), Math.random(), Math.random(), 1],
+            uDepth: -1.0
         },
         translation: [0, 0]
     };
     objectsToDraw.push(object);
     currentObject = objectsToDraw[0];
-    addMenu(objectsToDraw[0], 0);
+    addMenu(objectsToDraw[0], 0, degree);
 
     function render() {
         if (pressedKeys["d"]) {
@@ -91,17 +93,23 @@ function main() {
     render();
 }
 
-function addMenu(object, id) {
-    const containter = document.querySelector('nav');
+function addMenu(object, id, degree) {
+    const container = document.querySelector('nav');
+    container.id = `menu${id}`;
 
     const menu = document.createElement('div');
     menu.className = 'menu';
 
     const info = document.createElement('span');
-    info.textContent = `ID: ${id}, stopień: ${Math.round(Math.sqrt(object.degree))}`;
+    info.textContent = `ID: ${id}, stopień: ${degree}`;
 
     const rgbInput = document.createElement('input');
     rgbInput.value = object.uniforms.uColor.join(', ');
+
+    menu.addEventListener('click', () => {
+        currentObject = objectsToDraw[id];
+        document.getElementById('current').innerText = `Current: ${id}`;
+    });
 
     rgbInput.addEventListener('input', () => {
         let rgb = rgbInput.value.split(',').map(n => Number(n));
@@ -112,5 +120,5 @@ function addMenu(object, id) {
     });
 
     menu.append(info, rgbInput);
-    containter.append(menu);
+    container.append(menu);
 }
