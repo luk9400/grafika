@@ -8,7 +8,7 @@ function initBuffers(gl, positions) {
     return positionBuffer;
 }
 
-function drawScene(gl, programInfo, positionBuffer, degree) {
+function drawScene(gl, programInfo, objectsToDraw) {
     Utils.resizeCanvas(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
@@ -16,20 +16,27 @@ function drawScene(gl, programInfo, positionBuffer, degree) {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     gl.useProgram(programInfo.program);
-    gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
-    let size = 2;          // 2 components per iteration
-    let type = gl.FLOAT;   // the data is 32bit floats
-    let normalize = false; // don't normalize the data
-    let stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
-    let offset = 0;        // start at the beginning of the buffer
-    gl.vertexAttribPointer(programInfo.attribLocations.vertexPosition, size, type, normalize, stride, offset);
-
-    gl.uniform2f(programInfo.uniformLocations.resolutionUniform, gl.canvas.width, gl.canvas.height);
-
-    gl.uniform4f(programInfo.uniformLocations.colorUniform, Math.random(), Math.random(), Math.random(), 1);
 
 
-    gl.drawArrays(gl.LINE_STRIP, 0, degree*degree);
+    objectsToDraw.forEach(object => {
+        gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
+        gl.bindBuffer(gl.ARRAY_BUFFER, object.positionBuffer);
+
+        let size = 2;          // 2 components per iteration
+        let type = gl.FLOAT;   // the data is 32bit floats
+        let normalize = false; // don't normalize the data
+        let stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
+        let offset = 0;        // start at the beginning of the buffer
+        gl.vertexAttribPointer(programInfo.attribLocations.vertexPosition, size, type, normalize, stride, offset);
+
+        let matrix = m3.projection(gl.canvas.clientWidth, gl.canvas.clientHeight);
+        matrix = m3.translate(matrix, object.translation[0], object.translation[1]);
+
+        gl.uniformMatrix3fv(programInfo.uniformLocations.matrixUniform, false, matrix);
+
+        gl.uniform4fv(programInfo.uniformLocations.colorUniform, object.uniforms.uColor);
+
+        gl.drawArrays(gl.LINE_STRIP, 0, object.degree * object.degree);
+    });
+
 }

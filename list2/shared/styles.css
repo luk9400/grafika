@@ -16,3 +16,9 @@ nav {
     display: flex;
     flex-direction: column;
 }
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rebeccapurple;
+}
