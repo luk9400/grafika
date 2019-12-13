@@ -31,6 +31,47 @@ class RightPaddle extends Paddle {
     }
 }
 
+class Net {
+    constructor(gl) {
+        this.position = [
+            0, 0,
+            0, 1000,
+            10, 0,
+            10, 0,
+            10, 1000,
+            0, 1000
+        ];
+        this.positionBuffer = initBuffers(gl, this.position)
+        this.color = [0.663, 0.663, 0.663, 1];
+        this.offset = 6;
+        this.translation = [495, 0];
+    }
+}
+
+class Ball {
+    constructor(gl) {
+        this.position = [
+            0, 0,
+            0, 10,
+            10, 0,
+            10, 0,
+            10, 10,
+            0, 10
+        ];
+        this.positionBuffer = initBuffers(gl, this.position)
+        this.currentPosition = this.position;
+        this.color = [0.9, 0.9, 0.9, 1];
+        this.offset = 6;
+        this.translation = [495, 295];
+        this.vx = 3;
+        this.vy = 0.1;
+    }
+
+    checkCollision(gl) {
+
+    }
+}
+
 class Pong {
     constructor(gl) {
         this.gl = gl;
@@ -46,7 +87,9 @@ class Pong {
 
         this.rightPaddle = new RightPaddle(gl);
         this.leftPaddle = new LeftPaddle(gl);
-        this.objectsToDraw = [this.rightPaddle, this.leftPaddle];
+        this.net = new Net(gl);
+        this.ball = new Ball(gl);
+        this.objectsToDraw = [this.rightPaddle, this.leftPaddle, this.net, this.ball];
     }
 
     drawScene() {

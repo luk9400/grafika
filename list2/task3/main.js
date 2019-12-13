@@ -32,6 +32,9 @@ function main() {
             needToRender = true;
         }
 
+        pong.ball.translation[0] += pong.ball.vx;
+        pong.ball.translation[1] += pong.ball.vy;
+
         pong.drawScene();
         requestAnimationFrame(render);
     }
