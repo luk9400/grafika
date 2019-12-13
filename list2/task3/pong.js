@@ -9,7 +9,8 @@ class Paddle {
             20, 200,
             0, 200
         ];
-        this.positionBuffer = initBuffers(gl, this.position)
+        this.positionBuffer = initBuffers(gl, this.position);
+        this.currentPosition = this.position;
         this.color = [1, 1, 1, 1];
         this.offset = 6;
     }
@@ -41,7 +42,8 @@ class Net {
             10, 1000,
             0, 1000
         ];
-        this.positionBuffer = initBuffers(gl, this.position)
+        this.positionBuffer = initBuffers(gl, this.position);
+        this.currentPosition = this.position;
         this.color = [0.663, 0.663, 0.663, 1];
         this.offset = 6;
         this.translation = [495, 0];
@@ -58,7 +60,7 @@ class Ball {
             10, 10,
             0, 10
         ];
-        this.positionBuffer = initBuffers(gl, this.position)
+        this.positionBuffer = initBuffers(gl, this.position);
         this.currentPosition = this.position;
         this.color = [0.9, 0.9, 0.9, 1];
         this.offset = 6;
@@ -68,7 +70,7 @@ class Ball {
     }
 
     checkCollision(gl) {
-
+        //TODO
     }
 }
 
@@ -115,6 +117,8 @@ class Pong {
             let matrix = m3.projection(this.gl.canvas.clientWidth, this.gl.canvas.clientHeight);
             matrix = m3.translate(matrix, object.translation[0], object.translation[1]);
 
+            //this.calculateCurrentPosition(object);
+
             this.gl.uniformMatrix3fv(this.uniforms.uMatrix, false, matrix);
 
             this.gl.uniform4fv(this.uniforms.uColor, object.color);
@@ -122,5 +126,20 @@ class Pong {
             this.gl.drawArrays(this.gl.TRIANGLES, 0, object.offset);
         });
     }
+
+    calculateCurrentPosition(object) {
+        for (let i = 0; i < object.position.length; i+=2) {
+            object.currentPosition[i] = object.position[i] + object.translation[0];
+            object.currentPosition[i + 1] = object.position[i + 1] + object.translation[1];
+        }
+    }
+}
+
+function initBuffers(gl, positions) {
+    const positionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+    return positionBuffer;
 }
 

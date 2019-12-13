@@ -17,19 +17,15 @@ function main() {
     function render() {
         if (pressedKeys["ArrowDown"]) {
             pong.rightPaddle.translation[1] += 5;
-            needToRender = true;
         }
         if (pressedKeys["ArrowUp"]) {
             pong.rightPaddle.translation[1] -= 5;
-            needToRender = true;
         }
         if (pressedKeys["s"]) {
             pong.leftPaddle.translation[1] += 5;
-            needToRender = true;
         }
         if (pressedKeys["w"]) {
             pong.leftPaddle.translation[1] -= 5;
-            needToRender = true;
         }
 
         pong.ball.translation[0] += pong.ball.vx;

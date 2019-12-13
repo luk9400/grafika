@@ -5,7 +5,7 @@ uniform mat3 uMatrix;
 uniform float uDepth;
 
 void main() {
-    gl_Position = vec4((uMatrix * vec3(aPosition, 1)).xy, 0.1 * uDepth, 1);
+    gl_Position = vec4((uMatrix * vec3(aPosition, 1)).xy, (uDepth - 1.0) / 14.0, 1);
 }
 `;
 
