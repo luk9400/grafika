@@ -4,15 +4,15 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link href="../shared/styles.css" rel="stylesheet"/>
+    <link href="pongStyles.css" rel="stylesheet"/>
     <script src="../shared/gl-matrix.js"></script>
     <script src="../shared/utils.js"></script>
+    <script src="../shared/matrix.js"></script>
     <script src="shaders.js"></script>
     <script src="webgl.js"></script>
-    <script src="hilbert.js"></script>
-    <script src="../shared/matrix.js"></script>
+    <script src="pong.js"></script>
     <script src="main.js"></script>
-    <title>Hilbert</title>
+    <title>Pong</title>
 
 </head>
 
@@ -20,12 +20,6 @@
 <canvas id='canvas'>
     Your browser doesn't support canvas element.
 </canvas>
-<nav>
-    <label for='degree'>Poziom:</label>
-    <input id='degree' type="number" min="1" max="15" value="4">
-    <button id='btn'>Rysuj</button>
-    <span id="current">Current: 0</span>
-</nav>
+
 
 </body>
-</html>
