@@ -65,12 +65,27 @@ class Ball {
         this.color = [0.9, 0.9, 0.9, 1];
         this.offset = 6;
         this.translation = [495, 295];
-        this.vx = 3;
-        this.vy = 0.1;
+        this.vx = 0;
+        this.vy = -1;
     }
 
     checkCollision(gl) {
-        //TODO
+        let ballMaxY = this.currentPosition[3];
+        let ballMinY = this.currentPosition[1];
+        let ballMaxX = this.currentPosition[4];
+        let ballMinX = this.currentPosition[0];
+
+        // top border
+        if (ballMinY <= 5) {
+            this.vy = -this.vy;
+        }
+
+        // bottom border
+        if (ballMaxY >= gl.canvas.clientHeight) {
+            this.vy = -this.vy;
+        }
+
+        //TODO finish this shit
     }
 }
 

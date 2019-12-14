@@ -32,6 +32,7 @@ function main() {
         pong.ball.translation[1] += pong.ball.vy;
 
         pong.drawScene();
+        //pong.ball.checkCollision(pong.gl);
         requestAnimationFrame(render);
     }
 
