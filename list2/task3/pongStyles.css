@@ -11,3 +11,8 @@ canvas {
     height: 600px;
     border: 1px solid black;
 }
+
+nav {
+    display: flex;
+    flex-direction: column;
+}
