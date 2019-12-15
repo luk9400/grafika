@@ -11,5 +11,5 @@ Repozytorium do kursu "Grafika Komputerowa"
 ## Lista 2
 - [Testowanie WebGL](./list2/task1)
 - [Krzywa Hilberta](./list2/task2)
-- [Gra 2D](./list2/task3)
-- [Gra 2D z teksturami](./list2/task4)
+- [Gra 2D (Pong)](./list2/task3)
+- [Gra 2D (Pong) z teksturami](./list2/task4)

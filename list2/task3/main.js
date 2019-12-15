@@ -28,11 +28,12 @@ function main() {
             pong.leftPaddle.translation[1] -= 5;
         }
 
-        pong.ball.translation[0] += pong.ball.vx;
-        pong.ball.translation[1] += pong.ball.vy;
+        pong.ball.translation[0] += pong.ball.dx;
+        pong.ball.translation[1] += pong.ball.dy;
+
+        pong.ball.checkCollision(pong.gl, pong);
 
         pong.drawScene();
-        //pong.ball.checkCollision(pong.gl);
         requestAnimationFrame(render);
     }
 

@@ -10,9 +10,10 @@ class Paddle {
             0, 200
         ];
         this.positionBuffer = initBuffers(gl, this.position);
-        this.currentPosition = this.position;
         this.color = [1, 1, 1, 1];
         this.offset = 6;
+        this.width = 20;
+        this.height = 200;
     }
 }
 
@@ -43,7 +44,6 @@ class Net {
             0, 1000
         ];
         this.positionBuffer = initBuffers(gl, this.position);
-        this.currentPosition = this.position;
         this.color = [0.663, 0.663, 0.663, 1];
         this.offset = 6;
         this.translation = [495, 0];
@@ -61,31 +61,66 @@ class Ball {
             0, 10
         ];
         this.positionBuffer = initBuffers(gl, this.position);
-        this.currentPosition = this.position;
         this.color = [0.9, 0.9, 0.9, 1];
         this.offset = 6;
         this.translation = [495, 295];
-        this.vx = 0;
-        this.vy = -1;
+        this.dx = -3;
+        this.dy = -1;
+        this.width = 10;
+        this.height = 10;
     }
 
-    checkCollision(gl) {
-        let ballMaxY = this.currentPosition[3];
-        let ballMinY = this.currentPosition[1];
-        let ballMaxX = this.currentPosition[4];
-        let ballMinX = this.currentPosition[0];
+    checkCollision(gl, pong) {
+        let score = document.getElementById('score');
+
+        let ballMaxY = this.translation[1] + this.height;
+        let ballMinY = this.translation[1];
+        let ballMaxX = this.translation[0] + this.width;
+        let ballMinX = this.translation[0];
+
+        let leftPaddleMaxY = pong.leftPaddle.translation[1] + pong.leftPaddle.height;
+        let leftPaddleMinY = pong.leftPaddle.translation[1];
+        let leftPaddleMaxX = pong.leftPaddle.translation[0] + pong.leftPaddle.width;
+
+        let rightPaddleMaxY = pong.rightPaddle.translation[1] + pong.rightPaddle.height;
+        let rightPaddleMinY = pong.rightPaddle.translation[1];
+        let rightPaddleMinX = pong.rightPaddle.translation[0];
 
         // top border
-        if (ballMinY <= 5) {
-            this.vy = -this.vy;
+        if (ballMinY <= 0) {
+            this.dy = -this.dy;
         }
 
         // bottom border
         if (ballMaxY >= gl.canvas.clientHeight) {
-            this.vy = -this.vy;
+            this.dy = -this.dy;
         }
 
-        //TODO finish this shit
+        // left paddle
+        if (ballMinX <= leftPaddleMaxX && ballMaxY >= leftPaddleMinY && ballMinY <= leftPaddleMaxY) {
+            //this.dy = -this.dy;
+            this.dx = -this.dx;
+        }
+
+        // right paddle
+        if (ballMaxX >= rightPaddleMinX && ballMaxY >= rightPaddleMinY && ballMinY <= rightPaddleMaxY) {
+            //this.dy = -this.dy;
+            this.dx = -this.dx;
+        }
+
+        // left border
+        if (ballMinX <= 0) {
+            this.translation = [495, 295];
+            pong.rightScore++;
+            score.innerText = `Score ${pong.leftScore}:${pong.rightScore}`;
+        }
+
+        // right border
+        if (ballMaxX >= gl.canvas.clientWidth) {
+            this.translation = [495, 295];
+            pong.leftScore++;
+            score.innerText = `Score ${pong.leftScore}:${pong.rightScore}`;
+        }
     }
 }
 
@@ -101,6 +136,9 @@ class Pong {
         this.attribs = {
             aPosition: gl.getAttribLocation(this.program, 'aPosition')
         };
+
+        this.leftScore = 0;
+        this.rightScore = 0;
 
         this.rightPaddle = new RightPaddle(gl);
         this.leftPaddle = new LeftPaddle(gl);
@@ -132,21 +170,12 @@ class Pong {
             let matrix = m3.projection(this.gl.canvas.clientWidth, this.gl.canvas.clientHeight);
             matrix = m3.translate(matrix, object.translation[0], object.translation[1]);
 
-            //this.calculateCurrentPosition(object);
-
             this.gl.uniformMatrix3fv(this.uniforms.uMatrix, false, matrix);
 
             this.gl.uniform4fv(this.uniforms.uColor, object.color);
 
             this.gl.drawArrays(this.gl.TRIANGLES, 0, object.offset);
         });
-    }
-
-    calculateCurrentPosition(object) {
-        for (let i = 0; i < object.position.length; i+=2) {
-            object.currentPosition[i] = object.position[i] + object.translation[0];
-            object.currentPosition[i + 1] = object.position[i + 1] + object.translation[1];
-        }
     }
 }
 
