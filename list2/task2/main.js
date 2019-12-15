@@ -17,7 +17,7 @@ function main() {
 
     Utils.resizeCanvas(gl.canvas);
 
-    document.getElementById('btn').addEventListener('click', event => {
+    document.getElementById('btn').addEventListener('click', () => {
         degree = parseInt(document.getElementById('degree').value);
         const positions = generatePoints(degree, gl.canvas.width, gl.canvas.height);
         let object = {
