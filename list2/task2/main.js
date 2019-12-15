@@ -25,7 +25,7 @@ function main() {
             degree: Math.pow(2, degree),
             uniforms: {
                 uColor: [Math.random(), Math.random(), Math.random(), 1],
-                uDepth: -0.5
+                uDepth: degree
             },
             translation: [0, 0]
         };
@@ -55,7 +55,7 @@ function main() {
         degree: Math.pow(2, degree),
         uniforms: {
             uColor: [Math.random(), Math.random(), Math.random(), 1],
-            uDepth: -1.0
+            uDepth: degree
         },
         translation: [0, 0]
     };

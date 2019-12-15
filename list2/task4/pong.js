@@ -18,9 +18,9 @@ class Paddle {
             1, 0
         ];
         this.positionBuffer = initBuffers(gl, this.position);
-        this.texcoordBuffer = initTextures(gl, this);
+        this.texcoordBuffer = initTextureBuffer(gl, this);
         this.textureSource = './textures/wood-texture.png';
-        this.color = [1, 1, 1, 1];
+        this.texture = loadTexture(gl, this);
         this.offset = 6;
         this.width = 20;
         this.height = 200;
@@ -62,9 +62,9 @@ class Net {
             1, 0
         ];
         this.positionBuffer = initBuffers(gl, this.position);
-        this.texcoordBuffer = initTextures(gl, this);
-        this.textureSource = './textures/web-texture.jpeg';
-        this.color = [0.663, 0.663, 0.663, 1];
+        this.texcoordBuffer = initTextureBuffer(gl, this);
+        this.textureSource = './textures/web-texture.png';
+        this.texture = loadTexture(gl, this);
         this.offset = 6;
         this.translation = [495, 0];
     }
@@ -89,9 +89,9 @@ class Ball {
             1, 0
         ];
         this.positionBuffer = initBuffers(gl, this.position);
-        this.texcoordBuffer = initTextures(gl, this);
+        this.texcoordBuffer = initTextureBuffer(gl, this);
         this.textureSource = './textures/snowball-texture.png';
-        this.color = [0.9, 0.9, 0.9, 1];
+        this.texture = loadTexture(gl, this);
         this.offset = 6;
         this.translation = [495, 295];
         this.dx = -3;
@@ -208,6 +208,7 @@ class Pong {
 
             this.gl.uniformMatrix3fv(this.uniforms.uMatrix, false, matrix);
 
+            this.gl.bindTexture(this.gl.TEXTURE_2D, object.texture);
             this.gl.uniform1i(this.uniforms.uTexture, 0);
 
             this.gl.drawArrays(this.gl.TRIANGLES, 0, object.offset);
@@ -223,25 +224,27 @@ function initBuffers(gl, positions) {
     return positionBuffer;
 }
 
-function initTextures(gl, object) {
+function initTextureBuffer(gl, object) {
     const texcoordBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(object.texcoords), gl.STATIC_DRAW);
 
-    let texture = gl.createTexture();
+    return texcoordBuffer;
+}
 
+function loadTexture(gl, object) {
+    const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 255, 0, 255]));
 
-    let image = new Image();
+    const image = new Image();
     image.src = object.textureSource;
     image.addEventListener('load', () => {
-       gl.bindTexture(gl.TEXTURE_2D, texture);
-       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-       gl.generateMipmap(gl.TEXTURE_2D);
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        gl.generateMipmap(gl.TEXTURE_2D);
     });
 
-
-    return texcoordBuffer;
+    return texture;
 }
 
