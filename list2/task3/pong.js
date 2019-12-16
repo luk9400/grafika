@@ -37,11 +37,11 @@ class Net {
     constructor(gl) {
         this.position = [
             0, 0,
-            0, 1000,
+            0, 600,
             10, 0,
             10, 0,
-            10, 1000,
-            0, 1000
+            10, 600,
+            0, 600
         ];
         this.positionBuffer = initBuffers(gl, this.position);
         this.color = [0.663, 0.663, 0.663, 1];

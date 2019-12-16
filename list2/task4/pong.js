@@ -47,11 +47,11 @@ class Net {
     constructor(gl) {
         this.position = [
             0, 0,
-            0, 1000,
+            0, 600,
             10, 0,
             10, 0,
-            10, 1000,
-            0, 1000
+            10, 600,
+            0, 600
         ];
         this.texcoords = [
             0, 0,
