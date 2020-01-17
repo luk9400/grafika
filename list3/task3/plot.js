@@ -2,7 +2,7 @@ class Plot {
     constructor(gl) {
         this.size = 1000;
         this.fidelity = 50;
-        this.positions = this.generatePlot([-5, 5], [-5, 5], (x, y) => Math.sin(x) * Math.cos(y), true);
+        this.positions = this.generatePlot([-5, 5], [-5, 5], (x, y) => Math.sin(x) * Math.cos(y), false);
         this.positionBuffer = initBuffers(gl, this.positions);
         this.color = [1, 0, 0, 1];
         this.translation = [0, 0, -2000];
@@ -132,7 +132,7 @@ class Engine {
 
             //this.gl.uniform4fv(this.uniforms.uColor, object.color);
             if (triangles) {
-                this.gl.drawArrays(this.gl.TRIANGLES, 0, 6 * object.fidelity * object.fidelity);
+                this.gl.drawArrays(this.gl.TRIANGLES, 0, 5.5 * object.fidelity * object.fidelity);
             } else {
                 this.gl.drawArrays(this.gl.POINTS, 0, object.fidelity * object.fidelity);
             }

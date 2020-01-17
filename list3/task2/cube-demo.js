@@ -172,7 +172,7 @@ var makeShaderProgram = function (gl) {
     return shaderProgram;
 };
 
-var drawBufferFace = function (gl, rotation, move, projection, buffer, textureId, textureUnit, filtering) {
+var drawBufferFace = function (gl, rotation, move, projection, buffer, textureId, textureUnit) {
     /* Parameters:
        gl - WebGL context
        view, projection - gl matrices 4x4 (column major)
@@ -197,10 +197,6 @@ var drawBufferFace = function (gl, rotation, move, projection, buffer, textureId
     gl.activeTexture(gl.TEXTURE0 + textureUnit);
     gl.uniform1i(tex2DLocation, textureUnit);
     gl.bindTexture(gl.TEXTURE_2D, textureId);
-
-    // change type of filtering
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filtering);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filtering);
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 }
@@ -363,7 +359,7 @@ var matrix4RotatedYZ = function (matrix, alpha) {
 
 var boxFaceTextures = [];
 
-var redraw = function (filter) {
+var redraw = function () {
     var projectionMatrix = glMatrix4FromMatrix(createProjectionMatrix4(gl,
         PROJECTION_Z_NEAR,
         PROJECTION_Z_FAR,
@@ -376,29 +372,20 @@ var redraw = function (filter) {
     gl.clearColor(0, 0, 0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    let filtering;
-    if (filter === true) {
-        filtering = gl.LINEAR;
-        console.log("linear");
-    } else {
-        filtering = gl.NEAREST;
-        console.log("nearest");
-    }
+    drawBufferFace(gl, rotationMatrix, moveVector, projectionMatrix,
+        xPlusArrayBuffer, boxFaceTextures[0], 1)
+    drawBufferFace(gl, rotationMatrix, moveVector, projectionMatrix,
+        xMinusArrayBuffer, boxFaceTextures[1], 2)
 
     drawBufferFace(gl, rotationMatrix, moveVector, projectionMatrix,
-        xPlusArrayBuffer, boxFaceTextures[0], 1, filtering)
+        yPlusArrayBuffer, boxFaceTextures[2], 3)
     drawBufferFace(gl, rotationMatrix, moveVector, projectionMatrix,
-        xMinusArrayBuffer, boxFaceTextures[1], 2, filtering)
+        yMinusArrayBuffer, boxFaceTextures[3], 4)
 
     drawBufferFace(gl, rotationMatrix, moveVector, projectionMatrix,
-        yPlusArrayBuffer, boxFaceTextures[2], 3, filtering)
+        zPlusArrayBuffer, boxFaceTextures[4], 5)
     drawBufferFace(gl, rotationMatrix, moveVector, projectionMatrix,
-        yMinusArrayBuffer, boxFaceTextures[3], 4, filtering)
-
-    drawBufferFace(gl, rotationMatrix, moveVector, projectionMatrix,
-        zPlusArrayBuffer, boxFaceTextures[4], 5, filtering)
-    drawBufferFace(gl, rotationMatrix, moveVector, projectionMatrix,
-        zMinusArrayBuffer, boxFaceTextures[5], 6, filtering)
+        zMinusArrayBuffer, boxFaceTextures[5], 6)
 
     sbx_drawSkybox(gl,
         rotationMatrix,
@@ -416,9 +403,6 @@ onWindowResize = function () {
     gl.viewport(0, 0, wth, hth);
     redraw();
 };
-
-
-let linearFiltering = true;
 
 function onKeyDown(e) {
     // var code=e.keyCode? e.keyCode : e.charCode;
@@ -451,9 +435,6 @@ function onKeyDown(e) {
         case 32: // space
             rotationMatrix4 = identityMatrix4;
             break;
-        case 69:
-            linearFiltering = (linearFiltering === true) ? false : true;
-            break;
         /*
           case 77: // M
           case 82: // R
@@ -476,7 +457,7 @@ function onKeyDown(e) {
           break;
         */
     }
-    redraw(linearFiltering);
+    redraw();
 }
 
 
@@ -517,12 +498,10 @@ window.onload = function () {
     for (var skyboxStep = 0; skyboxStep < 6; skyboxStep++) {
         sbx_fillCanvasUpsideDown(canvasTex, sbx_createFunctionRGB(fun[r], fun[g], fun[b], skyboxXYZ[skyboxStep]));
         sbx_loadCubeFaceFromCanvas(gl, canvasTex, cubeFace[skyboxStep]);
-        boxFaceTextures.push(loadTexture(gl, gl.LINEAR));
+        boxFaceTextures.push(loadTexture(gl));
         //boxFaceTextures.push(createTexture2D(gl));
         //loadTexture2DFromCanvas(gl, canvasTex, boxFaceTextures[boxFaceTextures.length - 1]);
     }
-
-    console.log("Press 'e' to change the type of texture filtering.");
 
     onWindowResize();
     window.onresize = onWindowResize;
