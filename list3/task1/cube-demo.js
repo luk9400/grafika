@@ -502,9 +502,11 @@ window.onload = function () {
     for (var skyboxStep = 0; skyboxStep < 6; skyboxStep++) {
         sbx_fillCanvasUpsideDown(canvasTex, sbx_createFunctionRGB(fun[r], fun[g], fun[b], skyboxXYZ[skyboxStep]));
         sbx_loadCubeFaceFromCanvas(gl, canvasTex, cubeFace[skyboxStep]);
-        boxFaceTextures.push(createTexture2D(gl));
-        loadTexture2DFromCanvas(gl, canvasTex, boxFaceTextures[boxFaceTextures.length - 1]);
+        boxFaceTextures.push(loadTexture(gl));
+        //boxFaceTextures.push(createTexture2D(gl));
+        //loadTexture2DFromCanvas(gl, canvasTex, boxFaceTextures[boxFaceTextures.length - 1]);
     }
+    console.log(boxFaceTextures.length)
 
     onWindowResize();
     window.onresize = onWindowResize;
