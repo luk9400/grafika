@@ -2,11 +2,11 @@ class Plot {
     constructor(gl) {
         this.size = 1000;  
         this.fidelity = 50;
-        this.positions = this.generatePlot([-5, 5], [-5, 5], (x, y) => x * y);    
+        this.positions = this.generatePlot([-5, 5], [-5, 5], (x, y) => Math.sin(x) * Math.cos(y));    
         this.positionBuffer = initBuffers(gl, this.positions);
         this.color = [1, 0, 0, 1];
-        this.translation = [0, 0, 2000];
-        this.rotation = [Math.PI, 0.02, 0];
+        this.translation = [0, 0, -2000];
+        this.rotation = [0, 0, 0];
 
 
         console.log(this.positions);
@@ -16,20 +16,23 @@ class Plot {
         let plot = [];
         for (let x = 0; x < this.fidelity; x++) {
             for (let y = 0; y < this.fidelity; y++) {
-                const value = func(
+                let value = func(
                     xRange[0] + x * (xRange[1] - xRange[0]) / this.fidelity,
                     yRange[0] + y * (yRange[1] - yRange[0]) / this.fidelity
                 );
+                const scaleFactor = this.size / Math.abs(xRange[1] - xRange[0]);
+                value *= scaleFactor;
                 
                 plot.push(
                     x * this.size / this.fidelity - this.size / 2, 
+                    value,
                     y * this.size / this.fidelity - this.size / 2, 
-                    value);
+                    );
             }
         }
 
-        const scaleFactor = this.size / Math.abs(xRange[1] - xRange[0]);
-        plot = plot.map((p, i) => i % 3 === 2 ? p * scaleFactor : p);
+        //const scaleFactor = this.size / Math.abs(xRange[1] - xRange[0]);
+        //plot = plot.map((p, i) => i % 3 === 2 ? p * scaleFactor : p);
 
         return plot;
     }
@@ -75,20 +78,16 @@ class Engine {
 
             let aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
             let fov = Math.PI / 4;
-            let scale = [1, 1, 1];
 
-            let matrix = m4.perspective(fov, aspect, 1, 5000);
+            let matrix = m4.perspective(fov, aspect, 1, 10000);
             matrix = m4.xRotate(matrix, object.rotation[0]);
             matrix = m4.yRotate(matrix, object.rotation[1]);
             //matrix = m4.zRotate(matrix, object.rotation[2]);
             matrix = m4.translate(matrix, object.translation[0], object.translation[1], object.translation[2]);
-            //matrix = m4.scale(matrix, scale[0], scale[1], scale[2]);
-            //let mat = m4.projection(this.gl.canvas.clientWidth, this.gl.canvas.clientHeight, 1);
-            //matrix = m4.multiply(matrix, m4.inverse(matrix));
 
             this.gl.uniformMatrix4fv(this.uniforms.uMatrix, false, matrix);
 
-            this.gl.uniform4fv(this.uniforms.uColor, object.color);
+            //this.gl.uniform4fv(this.uniforms.uColor, object.color);
 
             this.gl.drawArrays(this.gl.POINTS, 0, object.fidelity * object.fidelity);
         });

@@ -21,16 +21,16 @@ function main() {
         if (pressedKeys["ArrowDown"]) {
             engine.plot.rotation[0] += 0.01;
         }
-        if (pressedKeys["ArrowLeft"]) {
+        if (pressedKeys["ArrowRight"]) {
             engine.plot.rotation[1] += 0.01;
         }
-        if (pressedKeys["ArrowRight"]) {
+        if (pressedKeys["ArrowLeft"]) {
             engine.plot.rotation[1] -= 0.01;
         }
-        if (pressedKeys["s"]) {
+        if (pressedKeys["w"]) {
             engine.plot.translation[2] += 10;
         }
-        if (pressedKeys["w"]) {
+        if (pressedKeys["s"]) {
             engine.plot.translation[2] -= 10;
         }
         if (pressedKeys["d"]) {
@@ -38,6 +38,12 @@ function main() {
         }
         if (pressedKeys["a"]) {
             engine.plot.translation[0] += 10;
+        }
+        if (pressedKeys["e"]) {
+            engine.plot.translation[1] += 10;
+        }
+        if (pressedKeys["q"]) {
+            engine.plot.translation[1] -= 10;
         }
 
         engine.drawScene();
