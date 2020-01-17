@@ -1,0 +1,29 @@
+html {
+    width: 100%;
+}
+
+body {
+    display: flex;
+}
+
+canvas {
+    width: 600px;
+    height: 600px;
+    border: 1px solid black;
+}
+
+nav {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu {
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rebeccapurple;
+}
+
+.menu:hover {
+    opacity: 0.5;
+}
