@@ -46,7 +46,7 @@ function main() {
             engine.plot.translation[1] -= 10;
         }
 
-        engine.drawScene();
+        engine.drawScene(false);
         requestAnimationFrame(render);
     }
 
