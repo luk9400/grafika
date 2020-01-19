@@ -1,5 +1,6 @@
 class Plot {
     constructor(gl) {
+        this.gl = gl;
         this.size = 1000;
         this.fidelity = 500;
         this.positions = [];
@@ -10,7 +11,7 @@ class Plot {
         this.translation = [0, 0, -2000];
         this.rotation = [0, 0, 0];
 
-        this.generatePlot(gl, [-5, 5], [-5, 5], (x, y) => Math.sin(x * y) + Math.cos( x + y));
+        this.generatePlot([-5, 5], [-5, 5], (x, y) => Math.sin(x**2 + y**2));
     }
 
     triangleNormal(triangle, swap = false) {
@@ -28,7 +29,7 @@ class Plot {
         ];
     }
 
-    generatePlot(gl, xRange, yRange, func) {
+    generatePlot(xRange, yRange, func) {
         this.positions = [];
         this.normals = [];
 
@@ -100,8 +101,8 @@ class Plot {
             }
         }
 
-        this.positionBuffer = initBuffers(gl, this.positions);
-        this.normalsBuffer = initBuffers(gl, this.normals);
+        this.positionBuffer = initBuffers(this.gl, this.positions);
+        this.normalsBuffer = initBuffers(this.gl, this.normals);
     }
 }
 

@@ -1,7 +1,7 @@
 class Plot {
     constructor(gl) {
         this.size = 1000;
-        this.fidelity = 50;
+        this.fidelity = 500;
         this.positions = this.generatePlot([-5, 5], [-5, 5], (x, y) => Math.sin(x) * Math.cos(y), true);
         this.positionBuffer = initBuffers(gl, this.positions);
         this.color = [1, 0, 0, 1];

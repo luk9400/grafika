@@ -3,10 +3,11 @@ window.onload = main;
 function main() {
     const canvas = document.getElementById('canvas');
     const gl = canvas.getContext('webgl');
+    const input = document.querySelector('input');
     if (!gl) {
         return;
     }
-
+    
     let pressedKeys = {};
     window.addEventListener("keydown", event => pressedKeys[event.key] = true);
     window.addEventListener("keyup", event => pressedKeys[event.key] = false);
@@ -15,8 +16,18 @@ function main() {
     Utils.resizeCanvas(engine.gl.canvas);
 
     let needToRender = true;
-    function render() {
 
+    input.addEventListener('keypress', e => {
+        console.log("click")
+        if (e.key === 'Enter') {
+            console.log(input.value)
+            const func = eval(input.value);
+            engine.plot.generatePlot([-5, 5], [-5, 5], func);
+            needToRender = true;
+        }
+    });
+
+    function render() {
         if (pressedKeys["ArrowUp"]) {
             engine.plot.rotation[0] -= 0.01;
             needToRender = true;
