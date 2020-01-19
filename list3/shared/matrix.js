@@ -21,6 +21,15 @@ let m4 = {
         -1, 1, 0, 1,
       ];
     },
+
+    identity: function() {
+      return [
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+      ]
+    },
   
     multiply: function(a, b) {
       let a00 = a[0 * 4 + 0];

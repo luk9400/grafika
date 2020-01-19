@@ -2,7 +2,7 @@ class Plot {
     constructor(gl) {
         this.size = 1000;
         this.fidelity = 50;
-        this.positions = this.generatePlot([-5, 5], [-5, 5], (x, y) => Math.sin(x) * Math.cos(y), false);
+        this.positions = this.generatePlot([-5, 5], [-5, 5], (x, y) => Math.sin(x) * Math.cos(y), true);
         this.positionBuffer = initBuffers(gl, this.positions);
         this.color = [1, 0, 0, 1];
         this.translation = [0, 0, -2000];
@@ -87,7 +87,8 @@ class Engine {
         this.program = Utils.initShaderProgram(this.gl, vsSource, fsSource);
 
         this.uniforms = {
-            uMatrix: gl.getUniformLocation(this.program, 'uMatrix')
+            uMatrix: gl.getUniformLocation(this.program, 'uMatrix'),
+            uPerspective: gl.getUniformLocation(this.program, 'uPerspective'),
         };
         this.attribs = {
             aPosition: gl.getAttribLocation(this.program, 'aPosition')
@@ -121,12 +122,16 @@ class Engine {
             let aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
             let fov = Math.PI / 4;
 
-            let matrix = m4.perspective(fov, aspect, 1, 10000);
-            matrix = m4.xRotate(matrix, object.rotation[0]);
+            let perspective = m4.perspective(fov, aspect, 1, 5000);
+
+            let matrix = m4.identity();
+            matrix = m4.xRotation(object.rotation[0]);
             matrix = m4.yRotate(matrix, object.rotation[1]);
             matrix = m4.translate(matrix, object.translation[0], object.translation[1], object.translation[2]);
 
+            this.gl.uniformMatrix4fv(this.uniforms.uPerspective, false, perspective);
             this.gl.uniformMatrix4fv(this.uniforms.uMatrix, false, matrix);
+
 
             if (triangles) {
                 this.gl.drawArrays(this.gl.TRIANGLES, 0, object.positions.length / 3);
