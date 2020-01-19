@@ -172,7 +172,7 @@ var makeShaderProgram = function (gl) {
     return shaderProgram;
 };
 
-var drawBufferFace = function (gl, rotation, move, projection, buffer, textureId, textureUnit) {
+var drawBufferFace = function (gl, rotation, move, projection, buffer, textureId, textureUnit, filtering) {
     /* Parameters:
        gl - WebGL context
        view, projection - gl matrices 4x4 (column major)
@@ -197,6 +197,9 @@ var drawBufferFace = function (gl, rotation, move, projection, buffer, textureId
     gl.activeTexture(gl.TEXTURE0 + textureUnit);
     gl.uniform1i(tex2DLocation, textureUnit);
     gl.bindTexture(gl.TEXTURE_2D, textureId);
+
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filtering);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filtering);
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 }
@@ -358,6 +361,7 @@ var matrix4RotatedYZ = function (matrix, alpha) {
 /* redraw variables */
 
 var boxFaceTextures = [];
+let filter = 0;
 
 var redraw = function () {
     var projectionMatrix = glMatrix4FromMatrix(createProjectionMatrix4(gl,
@@ -372,20 +376,34 @@ var redraw = function () {
     gl.clearColor(0, 0, 0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    drawBufferFace(gl, rotationMatrix, moveVector, projectionMatrix,
-        xPlusArrayBuffer, boxFaceTextures[0], 1)
-    drawBufferFace(gl, rotationMatrix, moveVector, projectionMatrix,
-        xMinusArrayBuffer, boxFaceTextures[1], 2)
+    const filtering = [
+        gl.NEAREST_MIPMAP_NEAREST,
+        gl.NEAREST_MIPMAP_LINEAR,
+        gl.LINEAR_MIPMAP_NEAREST,
+        gl.LINEAR_MIPMAP_LINEAR
+    ][filter];
+
+    console.log([
+        'nearest mipmap nearest',
+        'nearest mipmap linear',
+        'linear mipmap nearest',
+        'linear mipmap linear'
+    ][filter]);
 
     drawBufferFace(gl, rotationMatrix, moveVector, projectionMatrix,
-        yPlusArrayBuffer, boxFaceTextures[2], 3)
+        xPlusArrayBuffer, boxFaceTextures[0], 1, filtering)
     drawBufferFace(gl, rotationMatrix, moveVector, projectionMatrix,
-        yMinusArrayBuffer, boxFaceTextures[3], 4)
+        xMinusArrayBuffer, boxFaceTextures[1], 2, filtering)
 
     drawBufferFace(gl, rotationMatrix, moveVector, projectionMatrix,
-        zPlusArrayBuffer, boxFaceTextures[4], 5)
+        yPlusArrayBuffer, boxFaceTextures[2], 3, filtering)
     drawBufferFace(gl, rotationMatrix, moveVector, projectionMatrix,
-        zMinusArrayBuffer, boxFaceTextures[5], 6)
+        yMinusArrayBuffer, boxFaceTextures[3], 4, filtering)
+
+    drawBufferFace(gl, rotationMatrix, moveVector, projectionMatrix,
+        zPlusArrayBuffer, boxFaceTextures[4], 5, filtering)
+    drawBufferFace(gl, rotationMatrix, moveVector, projectionMatrix,
+        zMinusArrayBuffer, boxFaceTextures[5], 6, filtering)
 
     sbx_drawSkybox(gl,
         rotationMatrix,
@@ -434,6 +452,9 @@ function onKeyDown(e) {
             break;
         case 32: // space
             rotationMatrix4 = identityMatrix4;
+            break;
+        case 69:
+            filter = (filter + 1) % 4;
             break;
         /*
           case 77: // M
@@ -498,7 +519,7 @@ window.onload = function () {
     for (var skyboxStep = 0; skyboxStep < 6; skyboxStep++) {
         sbx_fillCanvasUpsideDown(canvasTex, sbx_createFunctionRGB(fun[r], fun[g], fun[b], skyboxXYZ[skyboxStep]));
         sbx_loadCubeFaceFromCanvas(gl, canvasTex, cubeFace[skyboxStep]);
-        boxFaceTextures.push(loadTexture(gl));
+        boxFaceTextures.push(loadTexture(gl, gl.NEAREST_MIPMAP_NEAREST));
         //boxFaceTextures.push(createTexture2D(gl));
         //loadTexture2DFromCanvas(gl, canvasTex, boxFaceTextures[boxFaceTextures.length - 1]);
     }
