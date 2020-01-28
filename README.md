@@ -15,8 +15,8 @@ Repozytorium do kursu "Grafika Komputerowa"
 - [Gra 2D (Pong) z teksturami](./list2/task4)
 
 ## Lista 3
-- [](./list3/task1)
-- [](./list3/task2)
+- [Filtrowanie tekstur](./list3/task1)
+- [Filtrowanie mipmap](./list3/task2)
 - [Wykres 3D](./list3/task3)
 - [Wykres 3D z perspektywą (?)](./list3/task4)
 - [Wykres 3D z oświetleniem](./list3/task5)
