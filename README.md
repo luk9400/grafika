@@ -18,5 +18,5 @@ Repozytorium do kursu "Grafika Komputerowa"
 - [Filtrowanie tekstur](./list3/task1)
 - [Filtrowanie mipmap](./list3/task2)
 - [Wykres 3D](./list3/task3)
-- [Wykres 3D z perspektywą (?)](./list3/task4)
+- [Wykres 3D z mgłą](./list3/task4)
 - [Wykres 3D z oświetleniem](./list3/task5)
